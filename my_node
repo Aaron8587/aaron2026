@@ -1,52 +1,76 @@
-# -------------------------------------------------------------------
-# 基础设置
-# -------------------------------------------------------------------
 port: 7890
 socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
 allow-lan: true
 mode: rule
 log-level: info
-external-controller: :9090
+external-controller: 0.0.0.0:9090
 
-# -------------------------------------------------------------------
-# 代理节点 (此处填入你的自建机场信息)
-# -------------------------------------------------------------------
-proxies:
-  - name: "我的自建节点"
-    type: ss  # 或是 vmess, trojan, shadowsocks 等
-    server: your.server.com
-    port: 443
-    cipher: aes-256-gcm
-    password: "your_password"
-    # udp: true
+dns:
+  enable: true
+  listen: 0.0.0.0:7874
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  fallback:
+    - 8.8.8.8
+    - 1.1.1.1
 
-# -------------------------------------------------------------------
-# 策略组 (控制流量走向)
-# -------------------------------------------------------------------
+# ===== 订阅（替换成你的机场链接）=====
+proxy-providers:
+  myairport:
+    type: http
+    url: "你的订阅链接"
+    interval: 3600
+    path: ./proxies/myairport.yaml
+    health-check:
+      enable: true
+      interval: 300
+      url: http://www.gstatic.com/generate_204
+
+# ===== 节点组 =====
 proxy-groups:
-  - name: 🚀 常用代理
+  - name: 🚀 节点选择
     type: select
     proxies:
-      - 我的自建节点
+      - ♻️ 自动选择
+      - 🌍 国外流量
       - DIRECT
 
-  - name: 🍎 苹果服务
+  - name: ♻️ 自动选择
+    type: url-test
+    use:
+      - myairport
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+
+  - name: 🌍 国外流量
+    type: select
+    use:
+      - myairport
+
+  - name: 🎯 全球直连
     type: select
     proxies:
       - DIRECT
-      - 🚀 常用代理
 
-# -------------------------------------------------------------------
-# 规则部分 (由上至下执行)
-# -------------------------------------------------------------------
+# ===== 规则 =====
 rules:
-  # --- 自定义例外配置 (单独配置的网址和IP放在最前面) ---
-  - DOMAIN-SUFFIX,special-site.com,DIRECT        # 走直连的特定域名
-  - DOMAIN,my-api.com,🚀 常用代理                 # 走代理的特定域名
-  - IP-CIDR,192.168.1.100/32,DIRECT,no-resolve  # 特定IP走直连
 
-  # --- 常见规则集 ---
-  - GEOIP,CN,DIRECT                             # 中国 IP 直连
-  - DOMAIN-SUFFIX,cn,DIRECT                     # .cn 域名直连
-  - MATCH,🚀 常用代理                            # 其余所有流量走代理
+  # ===== 自定义直连（优先）=====
+  - DOMAIN-SUFFIX,example.com,DIRECT
+  - DOMAIN-KEYWORD,baidu,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
 
+  # ===== 自定义走代理 =====
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,youtube.com,🚀 节点选择
+
+  # ===== 中国大陆直连 =====
+  - GEOIP,CN,DIRECT
+
+  # ===== 其他全部走代理 =====
+  - MATCH,🚀 节点选择
