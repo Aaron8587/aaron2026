@@ -1,0 +1,145 @@
+port: 7890
+socks-port: 7891
+redir-port: 7892
+mixed-port: 7893
+allow-lan: true
+mode: rule
+log-level: warning
+external-controller: 0.0.0.0:9090
+
+# ===== TUN（全局接管🔥）=====
+tun:
+  enable: true
+  stack: system
+  auto-route: true
+  auto-detect-interface: true
+
+# ===== DNS（抗污染+防泄漏）=====
+dns:
+  enable: true
+  listen: 0.0.0.0:7874
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+
+  default-nameserver:
+    - 1.1.1.1
+    - 8.8.8.8
+
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+
+  fallback:
+    - tls://1.1.1.1
+    - tls://8.8.8.8
+
+  fallback-filter:
+    geoip: true
+    geoip-code: CN
+
+# ===== 订阅 =====
+proxy-providers:
+  myairport:
+    type: http
+    url: "你的订阅链接"
+    interval: 1800
+    path: ./proxies/myairport.yaml
+    health-check:
+      enable: true
+      interval: 180
+      url: http://www.gstatic.com/generate_204
+
+# ===== 节点组（智能分流🔥）=====
+proxy-groups:
+
+  # 总入口
+  - name: 🚀 总入口
+    type: select
+    proxies:
+      - ⚡ 延迟最低
+      - 🔁 故障转移
+      - 🇺🇸 游戏专用
+      - 🇯🇵 低延迟
+      - 🌍 手动
+      - DIRECT
+
+  # 最低延迟（核心🔥）
+  - name: ⚡ 延迟最低
+    type: url-test
+    use:
+      - myairport
+    url: http://www.gstatic.com/generate_204
+    interval: 120
+
+  # 自动容灾（掉线自动换）
+  - name: 🔁 故障转移
+    type: fallback
+    use:
+      - myairport
+    url: http://www.gstatic.com/generate_204
+    interval: 120
+
+  # 游戏专用（美国优先）
+  - name: 🇺🇸 游戏专用
+    type: url-test
+    use:
+      - myairport
+    filter: "US|United States|美国"
+    interval: 120
+
+  # 日本低延迟
+  - name: 🇯🇵 低延迟
+    type: url-test
+    use:
+      - myairport
+    filter: "JP|Japan|日本"
+    interval: 120
+
+  # 手动
+  - name: 🌍 手动
+    type: select
+    use:
+      - myairport
+
+# ===== 规则（骨灰级🔥）=====
+rules:
+
+  # ===== 🎮 PS5 / 游戏（最高优先级）=====
+  - DOMAIN-SUFFIX,playstation.com,DIRECT
+  - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
+  - DOMAIN-KEYWORD,playstation,DIRECT
+
+  # NAT关键端口
+  - DST-PORT,3478,DIRECT
+  - DST-PORT,3479,DIRECT
+  - DST-PORT,3480,DIRECT
+
+  # UDP全部直连（极致稳定）
+  - NETWORK,UDP,DIRECT
+
+  # ===== 🤖 AI专线 =====
+  - DOMAIN-SUFFIX,openai.com,🚀 总入口
+  - DOMAIN-SUFFIX,chatgpt.com,🚀 总入口
+
+  # ===== 📺 YouTube（智能节点）=====
+  - DOMAIN-SUFFIX,youtube.com,🚀 总入口
+  - DOMAIN-SUFFIX,googlevideo.com,🚀 总入口
+  - DOMAIN-SUFFIX,ytimg.com,🚀 总入口
+
+  # ===== 🎵 TikTok =====
+  - DOMAIN-SUFFIX,tiktok.com,🚀 总入口
+  - DOMAIN-SUFFIX,tiktokcdn.com,🚀 总入口
+
+  # ===== 🌍 Google =====
+  - DOMAIN-SUFFIX,google.com,🚀 总入口
+  - DOMAIN-SUFFIX,gstatic.com,🚀 总入口
+
+  # ===== 🧱 广告拦截 =====
+  - DOMAIN-SUFFIX,doubleclick.net,REJECT
+  - DOMAIN-SUFFIX,googlesyndication.com,REJECT
+
+  # ===== 🇨🇳 国内 =====
+  - GEOIP,CN,DIRECT
+
+  # ===== 🌍 其他 =====
+  - MATCH,🚀 总入口
