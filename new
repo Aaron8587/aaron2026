@@ -1,50 +1,30 @@
-# ===== PS5 DNS直连（关键🔥）=====
-- DOMAIN-SUFFIX,playstation.net,DIRECT
-- DOMAIN-SUFFIX,playstation.com,DIRECT
-- DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
-- DOMAIN-KEYWORD,playstation,DIRECT
-
-# DNS请求直连
-- DST-PORT,53,DIRECT
-
-
-
 rules:
 
-  # ===== 🎮 PS5终极稳定（核心🔥）=====
-
-  # PSN域名直连
+  # ===== 🎮 PS5 / PSN 专用（必须最优先）=====
   - DOMAIN-SUFFIX,playstation.com,DIRECT
   - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
   - DOMAIN-SUFFIX,psn.com,DIRECT
   - DOMAIN-KEYWORD,playstation,DIRECT
 
-  # NAT关键端口
+  # NAT检测关键端口（非常重要🔥）
   - DST-PORT,3478,DIRECT
   - DST-PORT,3479,DIRECT
   - DST-PORT,3480,DIRECT
 
-  # DNS直连
-  - DST-PORT,53,DIRECT
+  # ===== 📺 YouTube 强制走代理 =====
+  - DOMAIN-SUFFIX,youtube.com,🚀 节点选择
+  - DOMAIN-SUFFIX,googlevideo.com,🚀 节点选择
+  - DOMAIN-SUFFIX,ytimg.com,🚀 节点选择
 
-  # ⭐ 关键：UDP全部直连（解决NAT）
-  - NETWORK,UDP,DIRECT
+  # ===== 🌍 Google服务（可选但推荐）=====
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
 
-  # ===== 📺 YouTube走代理 =====
-  - DOMAIN-SUFFIX,youtube.com,🚀 总入口
-  - DOMAIN-SUFFIX,googlevideo.com,🚀 总入口
-  - DOMAIN-SUFFIX,ytimg.com,🚀 总入口
+  # ===== 🧠 你自定义例外（可改）=====
+  # - DOMAIN-SUFFIX,example.com,DIRECT
 
-  # ===== 🤖 AI服务 =====
-  - DOMAIN-SUFFIX,openai.com,🚀 总入口
-  - DOMAIN-SUFFIX,chatgpt.com,🚀 总入口
-
-  # ===== 🌍 Google =====
-  - DOMAIN-SUFFIX,google.com,🚀 总入口
-  - DOMAIN-SUFFIX,gstatic.com,🚀 总入口
-
-  # ===== 🇨🇳 国内 =====
+  # ===== 🇨🇳 国内直连 =====
   - GEOIP,CN,DIRECT
 
-  # ===== 🌍 其他 =====
-  - MATCH,🚀 总入口
+  # ===== 🌍 其他全部走代理 =====
+  - MATCH,🚀 节点选择
