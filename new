@@ -6,3 +6,45 @@
 
 # DNS请求直连
 - DST-PORT,53,DIRECT
+
+
+
+rules:
+
+  # ===== 🎮 PS5终极稳定（核心🔥）=====
+
+  # PSN域名直连
+  - DOMAIN-SUFFIX,playstation.com,DIRECT
+  - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
+  - DOMAIN-SUFFIX,psn.com,DIRECT
+  - DOMAIN-KEYWORD,playstation,DIRECT
+
+  # NAT关键端口
+  - DST-PORT,3478,DIRECT
+  - DST-PORT,3479,DIRECT
+  - DST-PORT,3480,DIRECT
+
+  # DNS直连
+  - DST-PORT,53,DIRECT
+
+  # ⭐ 关键：UDP全部直连（解决NAT）
+  - NETWORK,UDP,DIRECT
+
+  # ===== 📺 YouTube走代理 =====
+  - DOMAIN-SUFFIX,youtube.com,🚀 总入口
+  - DOMAIN-SUFFIX,googlevideo.com,🚀 总入口
+  - DOMAIN-SUFFIX,ytimg.com,🚀 总入口
+
+  # ===== 🤖 AI服务 =====
+  - DOMAIN-SUFFIX,openai.com,🚀 总入口
+  - DOMAIN-SUFFIX,chatgpt.com,🚀 总入口
+
+  # ===== 🌍 Google =====
+  - DOMAIN-SUFFIX,google.com,🚀 总入口
+  - DOMAIN-SUFFIX,gstatic.com,🚀 总入口
+
+  # ===== 🇨🇳 国内 =====
+  - GEOIP,CN,DIRECT
+
+  # ===== 🌍 其他 =====
+  - MATCH,🚀 总入口
