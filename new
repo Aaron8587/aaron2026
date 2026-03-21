@@ -1,0 +1,8 @@
+# ===== PS5 DNS直连（关键🔥）=====
+- DOMAIN-SUFFIX,playstation.net,DIRECT
+- DOMAIN-SUFFIX,playstation.com,DIRECT
+- DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
+- DOMAIN-KEYWORD,playstation,DIRECT
+
+# DNS请求直连
+- DST-PORT,53,DIRECT
