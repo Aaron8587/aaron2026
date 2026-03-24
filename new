@@ -1,30 +1,22 @@
+# 1. 找到 rule-providers 这一栏（如果没有，就新建在最顶层）
+rule-providers:
+  porn_block:
+    type: http
+    behavior: domain
+    url: "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/porn.txt"
+    path: ./rule_provider/porn_block.yaml
+    interval: 86400
+
+# 2. 找到 rules 这一栏，确保拦截规则在最上方
 rules:
+  # --- 屏蔽色情网站开始 ---
+  - RULE-SET,porn_block,REJECT
+  # 如果想通过关键词拦截（慎用，可能会误伤，如 search?q=sex）
+  - DOMAIN-KEYWORD,porn,REJECT
+  - DOMAIN-KEYWORD,sex,REJECT
+  - DOMAIN-KEYWORD,adult,REJECT
+  # --- 屏蔽色情网站结束 ---
 
-  # ===== 🎮 PS5 / PSN 专用（必须最优先）=====
-  - DOMAIN-SUFFIX,playstation.com,DIRECT
-  - DOMAIN-SUFFIX,sonyentertainmentnetwork.com,DIRECT
-  - DOMAIN-SUFFIX,psn.com,DIRECT
-  - DOMAIN-KEYWORD,playstation,DIRECT
-
-  # NAT检测关键端口（非常重要🔥）
-  - DST-PORT,3478,DIRECT
-  - DST-PORT,3479,DIRECT
-  - DST-PORT,3480,DIRECT
-
-  # ===== 📺 YouTube 强制走代理 =====
-  - DOMAIN-SUFFIX,youtube.com,🚀 节点选择
-  - DOMAIN-SUFFIX,googlevideo.com,🚀 节点选择
-  - DOMAIN-SUFFIX,ytimg.com,🚀 节点选择
-
-  # ===== 🌍 Google服务（可选但推荐）=====
-  - DOMAIN-SUFFIX,google.com,🚀 节点选择
-  - DOMAIN-SUFFIX,gstatic.com,🚀 节点选择
-
-  # ===== 🧠 你自定义例外（可改）=====
-  # - DOMAIN-SUFFIX,example.com,DIRECT
-
-  # ===== 🇨🇳 国内直连 =====
+  # 下面是你原本的规则，例如：
   - GEOIP,CN,DIRECT
-
-  # ===== 🌍 其他全部走代理 =====
-  - MATCH,🚀 节点选择
+  - MATCH,Proxy
